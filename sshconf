@@ -1,0 +1,56 @@
+#!/bin/bash
+#Made by Gen Lee ^.^
+#######
+#Adds new host to ~/.ssh/config
+ver="Ezy SSH v0.1"
+
+#Colors:
+red='\033[01;31m'
+norm='\033[00m'
+
+echo "Started $ver"
+  # Questions
+    echo -en "Enter ${red}host${norm}: "
+    read config_host
+    echo -en "Enter ${red}domain${norm}/${red}ip${norm}: "
+    read config_hostname
+    echo -en "Enter ${red}port${norm} (${red}22${norm}): "
+    read config_port
+    echo -en "Enter ${red}username${norm} (${red}root${norm}): "
+    read config_user
+    echo -en "Enter ${red}private key location${norm}: "
+    read config_key
+
+  # Checking information
+    check_host=$(awk "/^Host $config_host$/" ~/.ssh/config)
+    if [ ! $check_host ]; then
+      sleep 0
+    else
+      echo -e "You already have following host (${red}$config_host${norm})!"
+      exit 0
+    fi
+    if [ ! $config_port ]; then
+      config_port="22"
+    fi
+    if [ ! $config_user ]; then
+      config_user="root"
+    fi
+    test -f $config_key
+    if [ $? -eq 1 ]; then
+      echo "Private key location is invalid!"
+      exit 0
+    fi
+
+  # Adding parameters to ~/.ssh/config
+    echo "" >> .ssh/config
+    echo "Host $config_host" >> ~/.ssh/config
+    echo -e "\t Hostname $config_hostname" >> ~/.ssh/config
+    echo -e "\t Port $config_port" >> ~/.ssh/config
+    echo -e "\t User $config_user" >> ~/.ssh/config
+    if [ ! $config_key ]; then
+      sleep 0
+    else
+      echo -e "\t IdentityFile $config_key" >> .ssh/config
+    fi
+echo "All done! ^.^"
+exit 0
